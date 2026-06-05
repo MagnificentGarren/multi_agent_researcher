@@ -1,0 +1,18 @@
+# Virtual Environment
+agent_env/
+.venv/
+venv/
+ENV/
+
+# Environment Variables / API Keys
+.env
+
+# Python caching artifacts
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating system files
+.DS_Store
+Thumbs.db
