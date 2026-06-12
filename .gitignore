@@ -16,3 +16,20 @@ ENV/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Next.js frontend dependencies and build folders
+**/node_modules/
+**/.next/
+
+# Frontend Configuration Boilerplate & Metadata
+**/eslint.config.mjs
+**/next.config.ts
+**/postcss.config.mjs
+**/tailwind.config.ts
+**/tsconfig.json
+**/package-lock.json
+**/package.json
+**/favicon.ico
+**/globals.css
+**/layout.tsx
+**/*.md
