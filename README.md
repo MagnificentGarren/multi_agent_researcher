@@ -1,38 +1,261 @@
-# AI Strategic Research Assistant
+# 🔍 AI Strategic Research Assistant
 
-A local, production-ready multi-agent orchestration engine that automates advanced research and technical brief generation. Powered by LangGraph's state persistence framework and Gemini 2.5 Flash, the system handles fault-tolerant operations, streams data via server-sent events, and supports real-time human steering.
+A production-ready multi-agent research orchestration platform that automates deep research, fact verification, and executive brief generation.
+
+Built with **LangGraph**, **FastAPI**, and **Google Gemini 2.5**, the system coordinates multiple specialized AI agents through a persistent shared state architecture. It supports fault-tolerant execution, real-time streaming via Server-Sent Events (SSE), and human-in-the-loop intervention for strategic steering during research cycles.
+
+---
 
 ## 🏗️ Architecture & Agent Workflow
 
-The system coordinates four specialized AI agents using a shared whiteboard state via LangGraph:
+The platform coordinates four specialized AI agents through a shared LangGraph state.
 
-1. **The Researcher:** Dynamically discovers specific historical details, metrics, and trends based on the primary topic or direct feedback. It utilizes a cumulative state optimization approach to safely append new data without overflowing context window tokens.
-2. **The Verifier:** Actively audits the researcher's raw data pipeline to enforce factual integrity and prevent hallucinations before drafting begins.
-3. **The Summarizer:** Synthesizes the checked facts into a deeply structured, executive-level technical brief adhering strictly to current directives.
-4. **The Critic:** Acts as a ruthless corporate editor. It evaluates the brief against an explicit scoring rubric, assigning an objective quality score (1-10). If the score drops below 8, it generates constructive critiques and loops the workflow back to the Researcher.
+### Researcher
+
+Discovers relevant facts, historical context, metrics, and emerging trends related to the requested topic. Uses cumulative state updates to safely expand knowledge while minimizing context-window growth.
+
+### Verifier
+
+Audits and validates research outputs before they are used downstream, reducing factual inconsistencies and mitigating hallucinations.
+
+### Summarizer
+
+Transforms verified findings into a structured, executive-level technical brief aligned with the user's objectives and guidance.
+
+### Critic
+
+Evaluates generated reports against a predefined quality rubric and assigns a score from 1–10. Reports scoring below the acceptance threshold are returned to the workflow with targeted improvement recommendations.
+
+```text
+[User Input]
+      │
+      ▼
+[Researcher]
+      │
+      ▼
+[Verifier]
+      │
+      ▼
+[Summarizer]
+      │
+      ▼
+[Critic]
+      │
+      ├── Score ≥ 8 ─────────► [Final Report]
+      │
+      └── Score < 8 ─────────► Feedback Loop
+                                 │
+                                 ▼
+                           [Researcher]
+```
+
+---
 
 ## 🚀 Key Features
 
-* **Dual-Engine Flexibility:** Optimized for ultra-fast, cost-efficient loops using **Gemini 2.5 Flash**, with seamless drop-in support for deep reasoning via **Gemini 2.5 Pro**.
-* **Human-in-the-Loop Interruption:** Automatically pauses execution at the edge of evaluation loops, exposing current state outputs to an elegant web UI so users can manually inject strategic steering.
-* **Fault-Tolerant Operations:** Built-in resilience against server bottlenecks, network dropouts, and API rate limits via custom exponential backoff configurations (`max_retries=5`).
-* **Decoupled High-Performance Streaming:** Exposes execution streams over FastAPI using high-throughput Server-Sent Events (SSE) consumed dynamically by a Next.js 14 App Router and Tailwind CSS dashboard.
-* **Context Preservation Guardrails:** Protects state memory across continuous iterative loops while preventing exponential token bloat.
+### Multi-Agent Research Pipeline
 
-## 🛠️ Tech Stack
+Coordinates specialized AI agents through a persistent graph-based workflow to improve research quality and consistency.
 
-* **Backend Engine:** Python, LangGraph, LangChain, FastAPI, Uvicorn, Pydantic
-* **Frontend UI:** Next.js (TypeScript), Tailwind CSS, Lucide React
-* **LLM Foundation:** Google Gemini API (`gemini-2.5-flash` / `gemini-2.5-pro`)
+### Human-in-the-Loop Steering
 
-## 📦 Quick Start
+Pauses execution at configurable checkpoints, allowing users to review intermediate outputs and inject strategic guidance before execution continues.
 
-### 1. Clone & Set Up Backend
-Ensure your environment variables are configured in an `.env` file containing your `GOOGLE_API_KEY`.
+### Fault-Tolerant Execution
+
+Handles transient API failures, network interruptions, and rate limits using configurable retry policies and exponential backoff mechanisms.
+
+### Real-Time Streaming
+
+Streams workflow progress and state updates through FastAPI-powered Server-Sent Events (SSE), enabling responsive user interfaces and live monitoring.
+
+### Context Preservation Guardrails
+
+Maintains long-running research state while preventing uncontrolled context expansion and token bloat.
+
+### Flexible Model Selection
+
+Optimized for rapid iterative workflows using Gemini 2.5 Flash, with support for Gemini 2.5 Pro when deeper reasoning is required.
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+
+* Python
+* LangGraph
+* LangChain
+* FastAPI
+* Uvicorn
+* Pydantic
+
+### Frontend
+
+* Next.js 14
+* TypeScript
+* Tailwind CSS
+* Lucide React
+
+### AI Models
+
+* Gemini 2.5 Flash
+* Gemini 2.5 Pro
+
+---
+
+## 📦 Installation & Setup
+
+### 1. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Backend Configuration
+GOOGLE_API_KEY=your_gemini_api_key_here
+PORT=8000
+HOST=127.0.0.1
+
+# Frontend Configuration
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+---
+
+### 2. Set Up the Backend
 
 ```bash
-# Activate your virtual environment
-source agent_env/bin/activate  # On Windows: agent_env\Scripts\activate
+# Clone repository
+git clone https://github.com/yourusername/ai-strategic-research-assistant.git
 
-# Install requirements and start the API engine
+cd ai-strategic-research-assistant
+
+# Create virtual environment
+python -m venv agent_env
+
+# Activate environment
+source agent_env/bin/activate
+# Windows:
+# agent_env\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start FastAPI server
 python main.py
+```
+
+Backend services will be available at:
+
+```text
+http://localhost:8000
+```
+
+Interactive API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+### 3. Launch the Frontend Dashboard
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## 🔌 API & Streaming Interface
+
+### Start Research Task
+
+**POST** `/api/research/start`
+
+Initiates a new research workflow.
+
+#### Request
+
+```json
+{
+  "topic": "Quantum Computing Scalability Milestones 2024-2026",
+  "model_preference": "gemini-2.5-flash"
+}
+```
+
+---
+
+### Stream Workflow Updates
+
+**GET** `/api/research/stream/{task_id}`
+
+Opens a persistent SSE connection and streams workflow state updates.
+
+#### Events
+
+* `researcher_yield`
+* `verifier_audit`
+* `summarizer_draft`
+* `critic_review`
+* `human_interrupt_required`
+
+---
+
+### Inject Human Feedback
+
+**POST** `/api/research/steer`
+
+Provides strategic feedback to an active workflow.
+
+#### Request
+
+```json
+{
+  "task_id": "string",
+  "user_feedback": "Focus deeper on topological qubit error-correction rates and skip general hardware overviews."
+}
+```
+
+---
+
+## 📈 Example Use Cases
+
+* Market intelligence research
+* Competitive analysis
+* Technical due diligence
+* Industry trend monitoring
+* Executive briefing generation
+* Investment research support
+* Technology landscape analysis
+
+---
+
+## 🔒 Reliability & Safety
+
+The platform includes several safeguards designed for long-running research workflows:
+
+* State persistence through LangGraph
+* Retry and recovery mechanisms
+* Human approval checkpoints
+* Fact verification stages
+* Controlled context growth
+* Streaming-based observability
+
+---
+
+## 📄 License
+
+Distributed under the MIT License.
+
+See the `LICENSE` file for additional information.
